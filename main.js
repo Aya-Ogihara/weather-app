@@ -2,11 +2,29 @@ import { ICON_MAP } from './iconMap';
 import './style.css';
 import { getWeather } from './weather';
 
-getWeather(10, 10, Intl.DateTimeFormat().resolvedOptions().timeZone).then(renderWeather).catch(e => {
-  console.log(e);
-  alert('Error getting weather data :(')
-});
+//******
+//Find user location
+//******
+navigator.geolocation.getCurrentPosition(positionSuccess, positionError);
 
+function positionSuccess({ coords }) {
+  getWeather(
+    coords.latitude,
+    coords.longitude,
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  )
+    .then(renderWeather)
+    .catch((e) => {
+      console.log(e);
+      alert('Error getting weather data :(');
+    });
+}
+
+function positionError() {
+  alert(
+    'There was an error getting your location. Please allow us to use your location and refresh the page'
+  )
+}
 
 //******
 // Rendering page
