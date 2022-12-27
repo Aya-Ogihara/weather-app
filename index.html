@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather App</title>
   </head>
-  <body>
+  <body class="blurred">
     <!-- header -->
     <header class="header">
       <div class="header-left">
@@ -13,7 +13,7 @@
           class="weather-icon large"
           src="icons/sun.svg"
           alt="sun"
-          data-current-con
+          data-current-icon
         />
         <div class="header-current-temp">
           <span data-current-temp>31</span>&deg;
@@ -87,7 +87,7 @@
     </section>
 
     <!-- hour section -->
-    <table class="hour-section">
+    <table class="hour-section" data-hour-section>
       <tbody data-hour-section>
         <tr class="hour-row">
           <td>
