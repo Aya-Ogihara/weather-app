@@ -1,55 +1,50 @@
-import { ICON_MAP } from './iconMap';
 import './style.css';
+import { ICON_MAP } from './iconMap';
 import { getWeather } from './weather';
 
 //******
 //Find user location
 //******
-navigator.geolocation.getCurrentPosition(positionSuccess, positionError);
-
-function positionSuccess({ coords }) {
-  getWeather(
-    coords.latitude,
-    coords.longitude,
-    Intl.DateTimeFormat().resolvedOptions().timeZone
-  )
-    .then(renderWeather)
-    .catch((e) => {
+const positionSuccess = async ({ coords }) => {
+  try {
+    const weather = await getWeather(
+      coords.latitude,
+      coords.longitude,
+      Intl.DateTimeFormat().resolvedOptions().timeZone
+    );
+    renderWeather(weather);
+  } catch {
+    (e) => {
       console.log(e);
       alert('Error getting weather data :(');
-    });
-}
+    };
+  }
+};
 
-function positionError() {
+const positionError = () => {
   alert(
     'There was an error getting your location. Please allow us to use your location and refresh the page'
-  )
-}
+  );
+};
+
+navigator.geolocation.getCurrentPosition(positionSuccess, positionError);
 
 //******
-// Rendering page
+// Rendering page functions
 //******
-function renderWeather({ current, daily, hourly }) {
-  renderCurrentWeather(current);
-  renderDailyWeather(daily);
-  renderHourlyWeather(hourly);
-  document.body.classList.remove('blurred');
-}
-
-
 // Helper function: instead of writing "document.querySelector('[data-current-temp]').textContent = current.currentTemp", many times in render$$$Weather functions
-function setValue(selector, value, { parent = document } = {}) {
+const setValue = (selector, value, { parent = document } = {}) => {
   parent.querySelector(`[data-${selector}]`).textContent = value;
-}
+};
 
 // Img attribute setting
-function getIconUrl(iconCode) {
+const getIconUrl = (iconCode) => {
   return `icons/${ICON_MAP.get(iconCode)}.svg`;
-}
+};
 
 // Current section rendering (header area)
 const currentIcon = document.querySelector('[data-current-icon]');
-function renderCurrentWeather(current) {
+const renderCurrentWeather = (current) => {
   currentIcon.src = getIconUrl(current.iconCode);
   setValue('current-temp', current.currentTemp);
   setValue('current-high', current.highTemp);
@@ -58,15 +53,14 @@ function renderCurrentWeather(current) {
   setValue('current-fl-low', current.lowFeelsLike);
   setValue('current-wind', current.windSpeed);
   setValue('current-precip', current.precip);
-}
-
+};
 
 // day section  section rendering
 const DAY_FORMATTER = new Intl.DateTimeFormat(undefined, { weekday: 'long' });
 const dailySection = document.querySelector('[data-day-section]');
 const dayCardTemplate = document.querySelector('#day-card-template');
 
-function renderDailyWeather(daily) {
+const renderDailyWeather = (daily) => {
   dailySection.innerHTML = '';
   daily.forEach((day) => {
     const element = dayCardTemplate.content.cloneNode(true);
@@ -75,15 +69,14 @@ function renderDailyWeather(daily) {
     element.querySelector('[data-icon]').src = getIconUrl(day.iconCode);
     dailySection.append(element);
   });
-}
-
+};
 
 // hour section rendering
 const HOUR_FORMATTER = new Intl.DateTimeFormat(undefined, { hour: 'numeric' });
 const hourlySection = document.querySelector('[data-hour-section]');
 const hourRowTemplate = document.querySelector('#hour-row-template');
 
-function renderHourlyWeather(hourly) {
+const renderHourlyWeather = (hourly) => {
   hourlySection.innerHTML = '';
   hourly.forEach((hour) => {
     const element = hourRowTemplate.content.cloneNode(true);
@@ -98,4 +91,14 @@ function renderHourlyWeather(hourly) {
     element.querySelector('[data-icon]').src = getIconUrl(hour.iconCode);
     hourlySection.append(element);
   });
-}
+};
+
+//******
+// Rendering page
+//******
+const renderWeather = ({ current, daily, hourly }) => {
+  renderCurrentWeather(current);
+  renderDailyWeather(daily);
+  renderHourlyWeather(hourly);
+  document.body.classList.remove('blurred');
+};
