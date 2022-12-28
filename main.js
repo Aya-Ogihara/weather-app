@@ -5,17 +5,19 @@ import { getWeather } from './weather';
 //******
 //Find user location
 //******
-const positionSuccess = ({ coords }) => {
-  getWeather(
-    coords.latitude,
-    coords.longitude,
-    Intl.DateTimeFormat().resolvedOptions().timeZone
-  )
-    .then(renderWeather)
-    .catch((e) => {
+const positionSuccess = async ({ coords }) => {
+  try {
+    const weather = await getWeather(
+      coords.latitude,
+      coords.longitude,
+      Intl.DateTimeFormat().resolvedOptions().timeZone
+    );
+    renderWeather(weather);
+  }
+  catch{(e) => {
       console.log(e);
       alert('Error getting weather data :(');
-    });
+    }};
 }
 
 const positionError = () =>{
