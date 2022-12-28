@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+//******
+//Parse data functions
+//******
+// Current
 const parseCurrentWeather = ({ current_weather, daily }) => {
   const {
     temperature: currentTemp,
@@ -25,8 +29,9 @@ const parseCurrentWeather = ({ current_weather, daily }) => {
     precip: Math.round(precip * 100) / 100,
     iconCode,
   };
-}
+};
 
+// Daily
 const parseDailyWeather = ({ daily }) => {
   return daily.time.map((time, index) => {
     return {
@@ -35,8 +40,9 @@ const parseDailyWeather = ({ daily }) => {
       maxTemp: Math.round(daily.temperature_2m_max[index]),
     };
   });
-}
+};
 
+// Weekly
 const parseHourlyWeather = ({ hourly, current_weather }) => {
   return hourly.time
     .map((time, index) => {
@@ -50,26 +56,26 @@ const parseHourlyWeather = ({ hourly, current_weather }) => {
       };
     })
     .filter(({ timeStamp }) => timeStamp >= current_weather.time * 1000);
-}
+};
 
-export const getWeather = (lat, lon, timezone) => {
-  return axios
-    .get(
-      'https://api.open-meteo.com/v1/forecast?hourly=temperature_2m,apparent_temperature,precipitation,weathercode,windspeed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_sum&current_weather=true&timeformat=unixtime',
-      {
-        params: {
-          latitude: lat,
-          longitude: lon,
-          timezone: timezone,
-        },
-      }
-    )
-    .then(({ data }) => {
-      return {
-        current: parseCurrentWeather(data),
-        daily: parseDailyWeather(data),
-        hourly: parseHourlyWeather(data),
-      };
-    });
-}
-
+//******
+// Get weather data from API
+//******
+export const getWeather = async (lat, lon, timezone) => {
+  const weather = await axios.get(
+    'https://api.open-meteo.com/v1/forecast?hourly=temperature_2m,apparent_temperature,precipitation,weathercode,windspeed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_sum&current_weather=true&timeformat=unixtime',
+    {
+      params: {
+        latitude: lat,
+        longitude: lon,
+        timezone: timezone,
+      },
+    }
+  );
+  const data = weather.data;
+  return {
+    current: parseCurrentWeather(data),
+    daily: parseDailyWeather(data),
+    hourly: parseHourlyWeather(data),
+  };
+};

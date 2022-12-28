@@ -13,18 +13,19 @@ const positionSuccess = async ({ coords }) => {
       Intl.DateTimeFormat().resolvedOptions().timeZone
     );
     renderWeather(weather);
-  }
-  catch{(e) => {
+  } catch {
+    (e) => {
       console.log(e);
       alert('Error getting weather data :(');
-    }};
-}
+    };
+  }
+};
 
-const positionError = () =>{
+const positionError = () => {
   alert(
     'There was an error getting your location. Please allow us to use your location and refresh the page'
-  )
-}
+  );
+};
 
 navigator.geolocation.getCurrentPosition(positionSuccess, positionError);
 
@@ -34,12 +35,12 @@ navigator.geolocation.getCurrentPosition(positionSuccess, positionError);
 // Helper function: instead of writing "document.querySelector('[data-current-temp]').textContent = current.currentTemp", many times in render$$$Weather functions
 const setValue = (selector, value, { parent = document } = {}) => {
   parent.querySelector(`[data-${selector}]`).textContent = value;
-}
+};
 
 // Img attribute setting
 const getIconUrl = (iconCode) => {
   return `icons/${ICON_MAP.get(iconCode)}.svg`;
-}
+};
 
 // Current section rendering (header area)
 const currentIcon = document.querySelector('[data-current-icon]');
@@ -52,8 +53,7 @@ const renderCurrentWeather = (current) => {
   setValue('current-fl-low', current.lowFeelsLike);
   setValue('current-wind', current.windSpeed);
   setValue('current-precip', current.precip);
-}
-
+};
 
 // day section  section rendering
 const DAY_FORMATTER = new Intl.DateTimeFormat(undefined, { weekday: 'long' });
@@ -69,8 +69,7 @@ const renderDailyWeather = (daily) => {
     element.querySelector('[data-icon]').src = getIconUrl(day.iconCode);
     dailySection.append(element);
   });
-}
-
+};
 
 // hour section rendering
 const HOUR_FORMATTER = new Intl.DateTimeFormat(undefined, { hour: 'numeric' });
@@ -92,7 +91,7 @@ const renderHourlyWeather = (hourly) => {
     element.querySelector('[data-icon]').src = getIconUrl(hour.iconCode);
     hourlySection.append(element);
   });
-}
+};
 
 //******
 // Rendering page
@@ -102,4 +101,4 @@ const renderWeather = ({ current, daily, hourly }) => {
   renderDailyWeather(daily);
   renderHourlyWeather(hourly);
   document.body.classList.remove('blurred');
-}
+};
